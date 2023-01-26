@@ -40,6 +40,8 @@ class MazeState():
         self.gcost = g         # Path cost
         self.pred = pred_state  # Predecesor state
         self.action_from_pred = pred_action  # Action from predecesor state to current state
+        self.hcost = 0
+        self.fcost = self.gcost+self.hcost    # f(n) value
 		### TODO - heuristic value for A*/greedy search ###
     
     def __hash__(self):
@@ -48,7 +50,7 @@ class MazeState():
     
     def __eq__(self, other):
         """ Checks for equality of states by positions only """
-        ### TODO ###
+        return self.pos == other.pos
     
     def __lt__(self, other):
         """ Allows for ordering the states by the path (g) cost """
@@ -80,6 +82,26 @@ class MazeState():
     def can_move(self, move):
         """ Returns true if agent can move in the given direction """
         ### TODO ###
+        new_pos = self.pos
+        is_valid_space = False
+        
+        if move=="UP":
+            new_pos = (self.pos[0]-1, self.pos[1])
+            
+        if move=="DOWN":
+            new_pos = (self.pos[0]+1, self.pos[1])
+            
+        if move=="LEFT":
+            new_pos = (self.pos[0], self.pos[1]-1)
+            
+        if move=="RIGHT":
+            new_pos = (self.pos[0], self.pos[1]+1)
+            
+            
+        if self.maze[new_pos]==0 and new_pos[0] <= np.shape(self.maze)[0] and new_pos[1] <= np.shape(self.maze)[1]:
+            is_valid_space = True
+            
+        return is_valid_space
 
                     
     def gen_next_state(self, move):
@@ -106,6 +128,8 @@ closed_set = set()
 num_states = 0
 while not frontier.empty():
     ### TODO ###
-    h=0
+    maze = MazeState()
+    maze.__str__()
+    
                     
 print('\nNumber of states visited =',num_states)
