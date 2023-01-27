@@ -125,8 +125,8 @@ class MazeState():
         return updated_maze
             
     def calc_hcost(self):
-        x_dist = self.pos[0] - self.END[0]
-        y_dist = self.pos[1] - self.END[1]
+        x_dist = abs(self.pos[0] - self.END[0])
+        y_dist = abs(self.pos[1] - self.END[1])
         new_hcost = x_dist + y_dist
         return new_hcost
         
