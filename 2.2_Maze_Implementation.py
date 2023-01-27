@@ -64,7 +64,7 @@ class MazeState():
 
     def is_goal(self):
         """ Returns true if current position is same as the exit position """
-        return self.pos==MazeState().END
+        return self.pos==self.END
 		
     move_num = 0 # Used by show_path() to count moves in the solution path
     def show_path(self):
@@ -150,7 +150,7 @@ num_states = 0
 while not frontier.empty():
     maze = MazeState()
     ### TODO, unsure how to implement ###
-    # selects new node and generates new MazeState ???
+    # maybe - selects new node and generates new MazeState ???
 
     
                     
