@@ -36,7 +36,9 @@ class MazeState():
 		
     
     def _get_heuristic_cost(self):
-        return abs(self.pos[0] - MazeState.END[0]) + abs(self.pos[1] - MazeState.END[1])
+        x_dist = abs(self.pos[0] - MazeState.END[0])
+        y_dist = abs(self.pos[1] - MazeState.END[1])
+        return x_dist + y_dist
         #return np.sqrt((self.pos[0] - MazeState.END[0])**2 + (self.pos[1] - MazeState.END[1])**2)
 
     def __hash__(self):
@@ -95,7 +97,6 @@ class MazeState():
             return False
         else:
             return self.maze[new_pos]==MazeState.SPACE or self.maze[new_pos]==MazeState.EXIT
-
                     
     def gen_next_state(self, move):
         """ Generates a new MazeState object by taking move from current state """
@@ -127,39 +128,23 @@ frontier.put(start_state)
 # Keep a closed set of states to which optimal path was already found
 closed_set = set()
 
+print("A* Search:")
 num_states = 0
 while not frontier.empty():
     curr_maze = frontier.get(0)
     closed_set.add(curr_maze)
-
-    if curr_maze.can_move("right"):
-        attempt = curr_maze.gen_next_state("right")
-        if attempt.check_if_visited(closed_set) == False:
-            frontier.put(attempt)
-            num_states = num_states+1
-        
-        
-    if curr_maze.can_move("left"):
-        attempt = curr_maze.gen_next_state("left")
-        if attempt.check_if_visited(closed_set) == False:
-            frontier.put(attempt)
-            num_states = num_states+1
-        
-    if curr_maze.can_move("up"):
-        attempt = curr_maze.gen_next_state("up")
-        if attempt.check_if_visited(closed_set) == False:
-            frontier.put(attempt)
-            num_states = num_states+1
-        
-    if curr_maze.can_move("down"):
-        attempt = curr_maze.gen_next_state("down")
-        if attempt.check_if_visited(closed_set) == False:
-            frontier.put(attempt)
-            num_states = num_states+1
+    
+    for direction in ["right", "left", "up", "down"]:
+        if curr_maze.can_move(direction):
+            attempt = curr_maze.gen_next_state(direction)
+            if(attempt.check_if_visited(closed_set)) == False:
+                frontier.put(attempt)
+                num_states = num_states+1
         
     if curr_maze.is_goal():
         frontier.empty()
-        print('\nPath Cost =',curr_maze.gcost)
+        path_cost = curr_maze.gcost
 
-                    
 print('\nNumber of states visited =',num_states)
+print('\nPath cost = ',path_cost)
+
