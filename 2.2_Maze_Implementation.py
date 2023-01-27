@@ -40,9 +40,8 @@ class MazeState():
         self.gcost = g         # Path cost
         self.pred = pred_state  # Predecesor state
         self.action_from_pred = pred_action  # Action from predecesor state to current state
-        self.hcost = 0
+        self.hcost = self.calc_hcost()     #h(n) value
         self.fcost = self.gcost+self.hcost    # f(n) value
-		### TODO - heuristic value for A*/greedy search ###
     
     def __hash__(self):
         """ Returns a hash code so that it can be stored in a set data structure """
@@ -55,12 +54,13 @@ class MazeState():
     def __lt__(self, other):
         """ Allows for ordering the states by the path (g) cost """
 		### TODO ###
+        # unsure what return type/value this is looking for
 		
     def __str__(self):
         """ Returns the maze representation of the state """
         a = np.array(self.maze)
         a[self.pos] = 4
-        return np.str(a)
+        return str(a)
 
     def is_goal(self):
         """ Returns true if current position is same as the exit position """
@@ -81,34 +81,55 @@ class MazeState():
     
     def can_move(self, move):
         """ Returns true if agent can move in the given direction """
-        ### TODO ###
-        new_pos = self.pos
+        curr_pos = self.pos
         is_valid_space = False
         
         if move=="UP":
-            new_pos = (self.pos[0]-1, self.pos[1])
+            new_pos = (curr_pos[0]-1, curr_pos[1])
             
         if move=="DOWN":
-            new_pos = (self.pos[0]+1, self.pos[1])
+            new_pos = (curr_pos[0]+1, curr_pos[1])
             
         if move=="LEFT":
-            new_pos = (self.pos[0], self.pos[1]-1)
+            new_pos = (curr_pos[0], curr_pos[1]-1)
             
         if move=="RIGHT":
-            new_pos = (self.pos[0], self.pos[1]+1)
+            new_pos = (curr_pos[0], curr_pos[1]+1)
             
-            
-        if self.maze[new_pos]==0 and new_pos[0] <= np.shape(self.maze)[0] and new_pos[1] <= np.shape(self.maze)[1]:
-            is_valid_space = True
+        if new_pos[0]>=0 and new_pos[0]<=np.shape(self.maze)[0] and new_pos[1]>=0 and new_pos[1]<=np.shape(self.maze)[1]:
+            if self.maze[new_pos]==0:
+                is_valid_space = True
             
         return is_valid_space
 
                     
     def gen_next_state(self, move):
         """ Generates a new MazeState object by taking move from current state """
-		### TODO ###
-
+        curr_pos = self.pos
+        curr_gcost = self.gcost
+        
+        if move=="UP":
+           new_pos = (curr_pos[0]-1, curr_pos[1])
             
+        if move=="DOWN":
+            new_pos = (curr_pos[0]+1, curr_pos[1])
+           
+        if move=="LEFT":
+            new_pos = (curr_pos[0], curr_pos[1]-1)
+             
+        if move=="RIGHT":
+            new_pos = (curr_pos[0], curr_pos[1]+1)
+            
+        updated_maze = MazeState()
+        updated_maze.__init__(new_pos, curr_gcost+1, curr_pos, move)
+        return updated_maze
+            
+    def calc_hcost(self):
+        x_dist = self.pos[0] - self.END[0]
+        y_dist = self.pos[1] - self.END[1]
+        new_hcost = x_dist + y_dist
+        return new_hcost
+        
 # Display the heading info
 print('Artificial Intelligence')
 print('Search algorithm implementation for a grid maze')
@@ -127,9 +148,10 @@ closed_set = set()
 
 num_states = 0
 while not frontier.empty():
-    ### TODO ###
     maze = MazeState()
-    maze.__str__()
+    ### TODO, unsure how to implement ###
+    # selects new node and generates new MazeState ???
+
     
                     
 print('\nNumber of states visited =',num_states)
