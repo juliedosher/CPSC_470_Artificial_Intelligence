@@ -131,14 +131,15 @@ closed_set = set()
 print("A* Search:")
 num_states = 0
 while not frontier.empty():
-    curr_maze = frontier.get(0)
+    print(frontier.get())
+    curr_maze = frontier.get()
     closed_set.add(curr_maze)
     
     for direction in ["right", "left", "up", "down"]:
         if curr_maze.can_move(direction):
             attempt = curr_maze.gen_next_state(direction)
             if(attempt.check_if_visited(closed_set)) == False:
-                frontier.put(attempt)
+                frontier.put(attempt.fcost, attempt)
                 num_states = num_states+1
         
     if curr_maze.is_goal():
@@ -147,4 +148,5 @@ while not frontier.empty():
 
 print('\nNumber of states visited =',num_states)
 print('\nPath cost = ',path_cost)
+
 
