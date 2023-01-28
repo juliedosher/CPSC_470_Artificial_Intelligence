@@ -123,30 +123,85 @@ print()
 # load start state onto frontier priority queue
 frontier = queue.PriorityQueue()
 start_state = MazeState()
-frontier.put(start_state)
-
+frontier.put((1, start_state))
 # Keep a closed set of states to which optimal path was already found
 closed_set = set()
 
 print("A* Search:")
 num_states = 0
 while not frontier.empty():
-    print(frontier.get())
-    curr_maze = frontier.get()
+    curr_maze = frontier.get()[1]
     closed_set.add(curr_maze)
     
     for direction in ["right", "left", "up", "down"]:
         if curr_maze.can_move(direction):
             attempt = curr_maze.gen_next_state(direction)
             if(attempt.check_if_visited(closed_set)) == False:
-                frontier.put(attempt.fcost, attempt)
+                fcost = attempt.fcost
+                frontier.put((fcost, attempt))
                 num_states = num_states+1
         
     if curr_maze.is_goal():
         frontier.empty()
         path_cost = curr_maze.gcost
 
-print('\nNumber of states visited =',num_states)
-print('\nPath cost = ',path_cost)
+print('Number of states visited =',num_states)
+print('Path cost = ',path_cost)
 
 
+# reset the frontier, closed set, MazeState, etc. #######
+frontier.empty()
+start_state = MazeState()
+frontier.put((1, start_state))
+closed_set.clear()
+num_states = 0
+path_cost = 0
+
+print("\nGreedy Search:")
+while not frontier.empty():
+    curr_maze = frontier.get()[1]
+    closed_set.add(curr_maze)
+    
+    for direction in ["right", "left", "up", "down"]:
+        if curr_maze.can_move(direction):
+            attempt = curr_maze.gen_next_state(direction)
+            if(attempt.check_if_visited(closed_set)) == False:
+                hcost = attempt.hcost
+                frontier.put((hcost, attempt))
+                num_states = num_states+1
+        
+    if curr_maze.is_goal():
+        frontier.empty()
+        path_cost = curr_maze.gcost
+
+print('Number of states visited =',num_states)
+print('Path cost = ',path_cost)
+
+
+# reset the frontier, closed set, MazeState, etc. #######
+frontier.empty()
+start_state = MazeState()
+frontier.put((1, start_state))
+closed_set.clear()
+num_states = 0
+path_cost = 0
+
+print("\nUniform-Cost Search:")
+while not frontier.empty():
+    curr_maze = frontier.get()[1]
+    closed_set.add(curr_maze)
+    
+    for direction in ["right", "left", "up", "down"]:
+        if curr_maze.can_move(direction):
+            attempt = curr_maze.gen_next_state(direction)
+            if(attempt.check_if_visited(closed_set)) == False:
+                gcost = attempt.gcost
+                frontier.put((gcost, attempt))
+                num_states = num_states+1
+        
+    if curr_maze.is_goal():
+        frontier.empty()
+        path_cost = curr_maze.gcost
+
+print('Number of states visited =',num_states)
+print('Path cost = ',path_cost)
