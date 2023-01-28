@@ -1,3 +1,4 @@
+import math
 import numpy as np
 import queue # Needed for frontier queue
 from heapq import heapify
@@ -41,6 +42,11 @@ class MazeState():
         return x_dist + y_dist
         #return np.sqrt((self.pos[0] - MazeState.END[0])**2 + (self.pos[1] - MazeState.END[1])**2)
 
+    def _get_hcost_Euclidean(self):
+        x_dist = self.pos[0] - MazeState.END[0]
+        y_dist = self.pos[1] - MazeState.END[1]
+        return math.sqrt((x_dist*x_dist)+(y_dist*y_dist))
+    
     def __hash__(self):
         """ Returns a hash code so that it can be stored in a set data structure """
         return self.pos.__hash__()
