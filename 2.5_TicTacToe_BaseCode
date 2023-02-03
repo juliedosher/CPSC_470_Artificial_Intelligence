@@ -1,0 +1,281 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+@author: szczurpi
+
+Gen-Tic-Tac-Toe
+"""
+
+import numpy as np
+import random
+import math
+
+class GenGameBoard: 
+    """ GenGameBoard class is responsible for representing the game board """
+    
+    def __init__(self, boardSize):
+        """ Constructor method - initializes each position variable and the board size """
+        self.boardSize = boardSize  # Holds the size of the board
+        self.marks = np.empty((boardSize, boardSize),dtype='str')  # Holds the mark for each position
+        self.marks[:,:] = ' '
+    
+    def printBoard(self):
+        """ Prints the game board using current marks """
+        # Prthe column numbers
+        print(' ',end='')
+        for j in range(self.boardSize):
+            print(" "+str(j+1), end='')
+        
+        # Prthe rows with marks
+        print("")
+        for i in range(self.boardSize):
+            # Prthe line separating the row
+            print(" ",end='')
+            for j in range(self.boardSize):
+                print("--",end='')
+            
+            print("-")
+
+            # Prthe row number
+            print(i+1,end='')
+            
+            # Prthe marks on self row
+            for j in range(self.boardSize):
+                print("|"+self.marks[i][j],end='')
+            
+            print("|")
+                
+        # Prthe line separating the last row
+        print(" ",end='')
+        for j in range(self.boardSize):
+            print("--",end='')
+        
+        print("-")
+
+    def makeMove(self, row, col, mark):
+        """
+        Attempts to make a move given the row,col and mark
+        If move cannot be made, returns False and prints a message if mark is 'X'
+        Otherwise, returns True
+        """
+        possible = False  # Variable to hold the return value
+        if row==-1 and col==-1:
+            return False
+        
+        # Change the row,col entries to array indexes
+        row = row - 1
+        col = col - 1
+        
+        if row<0 or row>=self.boardSize or col<0 or col>=self.boardSize:
+            print("Not a valid row or column!")
+            return False
+        
+        # Check row and col, and make sure space is empty
+        # If empty, set the position to the mark and change possible to True
+        if self.marks[row][col] == ' ':
+            self.marks[row][col] = mark
+            possible = True    
+        
+        # Print the message to the player if the move was not possible
+        if not possible and mark=='X':
+            print("\nself position is already taken!")
+        
+        return possible
+       
+    def checkWin(self, mark):
+        """
+        Determines whether a game winning condition exists
+        If so, returns True, and False otherwise
+        """
+        won = False # Variable holding the return value
+        
+        # Check wins by examining each combination of positions
+        
+        # Check each row
+        for i in range(self.boardSize):
+            won = True
+            for j in range(self.boardSize):
+                if self.marks[i][j]!=mark:
+                    won=False
+                    break        
+            if won:
+                break
+        
+        # Check each column
+        if not won:
+            for i in range(self.boardSize):
+                won = True
+                for j in range(self.boardSize):
+                    if self.marks[j][i]!=mark:
+                        won=False
+                        break
+                if won:
+                    break
+
+        # Check first diagonal
+        if not won:
+            for i in range(self.boardSize):
+                won = True
+                if self.marks[i][i]!=mark:
+                    won=False
+                    break
+                
+        # Check second diagonal
+        if not won:
+            for i in range(self.boardSize):
+                won = True
+                if self.marks[self.boardSize-1-i][i]!=mark:
+                    won=False
+                    break
+
+        return won
+    
+    def noMoreMoves(self):
+        """
+        Determines whether the board is full
+        If full, returns True, and False otherwise
+        """
+        return (self.marks!=' ').all()
+        
+        
+    def terminal_test(self):
+        """ Return true if current state is a game ending state """
+        if self.noMoreMoves() or self.checkWin('X') or self.checkWin('O'):
+            return True
+        else:
+            return False
+        
+       
+    def utility(self):
+        """ Returns the utility of a terminating state """
+        if self.checkWin('X'):
+            return -1
+        elif self.checkWin('O'):
+            return 1
+        else:
+            return 0
+    
+    def actions(self):
+        """ Returns the array of possible moves left on the board """
+        return np.argwhere(self.marks == ' ')
+    
+    def max_value(self, alpha, beta):
+        if self.terminal_test():
+            return self.utility()
+        
+        for a in range(self.actions()):
+            self.marks[a] = 'O'
+            result = self.min_value(0,0)
+            self.marks[a] = ' '
+            
+        return
+    
+    def min_value(self, alpha, beta):
+        if self.terminal_test():
+           return self.utility()
+       
+        for a in range(self.actions()):
+           self.marks[a] = 'O'
+           result = self.max_value(0,0)
+           self.marks[a] = ' '
+           
+        return
+    
+    def minimax_search(self):
+        (a,v) = self.max_value(-math.inf, math.inf)
+        return a
+        
+    
+    def makeCompMove(self):
+        """
+        TODO - this method should run minimax to determine the value of each move
+        Then make best move for the computer by placing the mark in the best spot
+        """
+        # Make sure the move was possible, if not try again
+        row, col = -1, -1
+        while not self.makeMove(row, col, 'O'):
+            if self.noMoreMoves:
+                print('No more moves')
+                
+            else:
+                print('more moves')
+          
+        a = self.minimax_search()
+        row = a[0]+1
+        col = a[1]+1
+        self.makeMove(a[0]+1, a[1]+1, 'O')
+        print("Computer chose: "+str(row)+","+str(col))
+       
+       
+        # Run alpha beta search here
+        ### TODO ###
+
+# Print out the header info
+print("CLASS: Artificial Intelligence, Lewis University")
+print("NAME: Julie Dosher")
+
+LOST = 0
+WON = 1
+DRAW = 2    
+wrongInput = False
+boardSize = int(input("Please enter the size of the board n (e.g. n=3,4,5,...): "))
+        
+# Create the game board of the given size
+board = GenGameBoard(boardSize)
+        
+board.printBoard()  # Print the board before starting the game loop
+
+# player = X, computer = O     
+# Game loop
+while True:
+    # *** Player's move ***        
+    
+    # Try to make the move and check if it was possible
+    # If not possible get col,row inputs from player    
+    row, col = -1, -1
+    while not board.makeMove(row, col, 'X'):
+        print("Player's Move")
+        row, col = input("Choose your move (row, column): ").split(',')
+        row = int(row)
+        col = int(col)
+
+    # Display the board again
+    board.printBoard()
+            
+    # Check for ending condition
+    # If game is over, check if player won and end the game
+    if board.checkWin('X'):
+        # Player won
+        result = WON
+        break
+    elif board.noMoreMoves():
+        # No moves left -> draw
+        result = DRAW
+        break
+            
+    # *** Computer's move ***
+    board.makeCompMove()
+    
+    # Print out the board again
+    board.printBoard()    
+    
+    # Check for ending condition
+    # If game is over, check if computer won and end the game
+    if board.checkWin('O'):
+        # Computer won
+        result = LOST
+        break
+    elif board.noMoreMoves():
+        # No moves left -> draw
+        result = DRAW
+        break
+        
+# Check the game result and print out the appropriate message
+print("GAME OVER")
+if result==WON:
+    print("You Won!")            
+elif result==LOST:
+    print("You Lost!")
+else: 
+    print("It was a draw!")
+
