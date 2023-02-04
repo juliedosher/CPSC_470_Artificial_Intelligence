@@ -162,24 +162,32 @@ class GenGameBoard:
     def max_value(self, alpha, beta):
         if self.terminal_test():
             return self.utility()
-        
+            
+        result = alpha
         for a in range(self.actions()):
             self.marks[a] = 'O'
-            result = self.min_value(0,0)
+            result = max(result, self.min_value(alpha, beta))
             self.marks[a] = ' '
-            
-        return
+            if result > beta:
+                return (a, result)
+                
+            alpha = max(alpha, result)
+        return result
     
     def min_value(self, alpha, beta):
         if self.terminal_test():
-           return self.utility()
-       
+            return self.utility()
+            
+        result = beta
         for a in range(self.actions()):
-           self.marks[a] = 'O'
-           result = self.max_value(0,0)
-           self.marks[a] = ' '
-           
-        return
+            self.marks[a] = 'X'
+            result = min(result, self.max_value(alpha, beta))
+            self.marks[a] = ' '
+            if result < alpha:
+                return (a, result)
+                
+            beta = min(beta, result)
+        return result
     
     def minimax_search(self):
         (a,v) = self.max_value(-math.inf, math.inf)
@@ -278,4 +286,5 @@ elif result==LOST:
     print("You Lost!")
 else: 
     print("It was a draw!")
+
 
